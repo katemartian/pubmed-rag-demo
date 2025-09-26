@@ -1,0 +1,9 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {"type": "integer"},
+    "text": {"type": "string"},
+    "label": {"type": "string", "enum": ["treatment", "diagnosis"]}
+  },
+  "required": ["id", "text", "label"]
+}
