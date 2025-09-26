@@ -1,0 +1,1 @@
+# Tiny RAG demo on PubMed abstracts with a simple evaluation harness.
