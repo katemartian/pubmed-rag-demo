@@ -4,7 +4,7 @@ from datetime import datetime
 from pathlib import Path
 import typer
 from .index import build_bm25_from_dir
-from .eval import context_hit_rate
+from .eval import context_hit_rate, retrieval_precision_at_k
 
 app = typer.Typer(add_completion=False)
 
@@ -33,20 +33,24 @@ def main(
     retriever = build_bm25_from_dir(data_p)
 
     # compute metrics
-    metrics = context_hit_rate(qa_pairs, retriever, k=k)
+    hit = context_hit_rate(qa_pairs, retriever, k=k)
+    prec = retrieval_precision_at_k(qa_pairs, retriever, k=k)
+    metrics = {"k": k, **hit, **prec}
+
     ts = datetime.now().strftime("%Y%m%d-%H%M%S")
     metrics_path = out_p / f"metrics_{ts}.json"
     report_path = out_p / f"report_{ts}.md"
 
     # save metrics.json
     with metrics_path.open("w", encoding="utf-8") as f:
-        json.dump({"k": k, **metrics}, f, ensure_ascii=False, indent=2)
+        json.dump(metrics, f, ensure_ascii=False, indent=2)
 
     # save markdown report
     with report_path.open("w", encoding="utf-8") as f:
         f.write("# Evaluation Report\n\n")
         f.write(f"- `k`: **{k}**\n")
         f.write(f"- `hit_rate`: **{metrics['hit_rate']:.3f}**\n")
+        f.write(f"- `precision_at_k`: **{metrics['precision_at_k']:.3f}**\n")
 
     typer.echo(f"Saved: {metrics_path}")
     typer.echo(f"Saved: {report_path}")
