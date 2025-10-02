@@ -16,3 +16,15 @@ Put your PubMed abstracts as plain text files into the `data/` folder.
 python -m pubmed_rag_demo.cli ./data -q "insulin regulates glucose" -k 2
 ```
 This will return top-k document IDs with BM25 scores in JSON.
+
+## Leaderboard (auto-generated)
+
+<!-- LB-START -->
+
+| k | hit_rate | precision@k |
+|---|----------|-------------|
+| 1 | 0.500 | 0.500 |
+| 2 | 1.000 | 0.500 |
+| 3 | 1.000 | 0.333 |
+
+<!-- LB-END -->
