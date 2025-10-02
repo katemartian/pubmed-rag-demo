@@ -14,8 +14,6 @@ def main(
     max_k: int = typer.Option(3, "--max-k", help="Test values of k from 1..max_k"),
     out_path: str = typer.Option("leaderboard.md", "--out", help="Markdown table output"),
 ):
-    import json
-
     # load QA
     qa_pairs = []
     with open(qa_path, "r", encoding="utf-8") as f:

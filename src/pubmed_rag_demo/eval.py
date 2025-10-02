@@ -36,7 +36,6 @@ def retrieval_precision_at_k(
     answer substring (case-insensitive). Average that fraction across all QA pairs.
     Returns {"precision_at_k": float}
     """
-    import math
 
     if k <= 0:
         return {"precision_at_k": 0.0}
@@ -56,4 +55,3 @@ def retrieval_precision_at_k(
         precisions.append(hits / k)
     # average over all QA pairs
     return {"precision_at_k": sum(precisions) / len(precisions) if precisions else 0.0}
-
