@@ -1,5 +1,7 @@
 # Tiny RAG demo on PubMed abstracts with a simple evaluation harness.
 
+[![CI](https://github.com/katemartian/pubmed-rag-demo/actions/workflows/ci.yml/badge.svg)](https://github.com/katemartian/pubmed-rag-demo/actions/workflows/ci.yml)
+
 ## Corpus setup
 
 Put your PubMed abstracts as plain text files into the `data/` folder.
