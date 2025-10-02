@@ -11,3 +11,5 @@ build/
 .idea/
 data/*
 !data/.gitkeep
+outputs/
+
