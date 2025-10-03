@@ -23,10 +23,10 @@ This will return top-k document IDs with BM25 scores in JSON.
 
 <!-- LB-START -->
 
-| k | hit_rate | precision@k |
-|---|----------|-------------|
-| 1 | 0.500 | 0.500 |
-| 2 | 1.000 | 0.500 |
-| 3 | 1.000 | 0.333 |
+| k | hit_rate | precision@k | faithfulness |
+|---|----------|-------------|--------------|
+| 1 | 0.500 | 0.500 | 1.000 |
+| 2 | 1.000 | 0.500 | 1.000 |
+| 3 | 1.000 | 0.333 | 1.000 |
 
 <!-- LB-END -->
