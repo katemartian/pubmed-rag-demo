@@ -57,11 +57,13 @@ def main(
     out_dir: str = typer.Option("outputs", "--out-dir", help="Where to save metrics/report"),
     use_llm: bool = typer.Option(False, "--use-llm/--no-llm", help="Use LLM for candidates"),
     llm_model: str = typer.Option("gpt-4o-mini", "--llm-model", help="LLM model name"),
+    dump_candidates: bool = typer.Option(False, "--dump-candidates/--no-dump-candidates", help="Write per-QA JSONL"),
 ):
     data_p = Path(data_dir)
     qa_p = Path(qa_path)
     out_p = Path(out_dir)
     out_p.mkdir(parents=True, exist_ok=True)
+    typer.echo(f"DEBUG out_dir={out_p.resolve()} dump_candidates={dump_candidates}")
 
     # load QA
     qa_pairs = []
@@ -84,8 +86,10 @@ def main(
     else:
         cands = naive_candidates(qa_pairs, retriever, k_for_candidate=1)
 
+    # faithfulness
     faith = faithfulness_overlap(qa_pairs, cands, retriever, k=k, threshold=0.6)
 
+    # collate + save aggregate
     metrics = {"k": k, **hit, **prec, **faith, "used_llm": use_llm}
     ts = datetime.now().strftime("%Y%m%d-%H%M%S")
     metrics_path = out_p / f"metrics_{ts}.json"
@@ -102,8 +106,29 @@ def main(
         f.write(f"- `faithfulness`: **{metrics['faithfulness']:.3f}**\n")
         f.write(f"- `used_llm`: **{use_llm}**\n")
 
-    typer.echo(f"Saved: {metrics_path}")
-    typer.echo(f"Saved: {report_path}")
+    typer.echo(f"Saved metrics: {metrics_path}")
+    typer.echo(f"Saved report:  {report_path}")
+    typer.echo(f"dump_candidates flag = {dump_candidates}")
+
+    # Per-QA dump
+    if dump_candidates:
+        dump_path = out_p / f"candidates_{ts}.jsonl"
+        with dump_path.open("w", encoding="utf-8") as f:
+            for (q, a_gt), cand in zip(qa_pairs, cands):
+                results = retriever.query(q, k=1)
+                doc_id, _ = results[0] if results else ("", 0.0)
+                ctx = ""
+                if results:
+                    idx = retriever._doc_ids.index(doc_id)
+                    ctx = retriever._docs[idx]
+                f.write(json.dumps({
+                    "question": q,
+                    "answer_gt": a_gt,
+                    "candidate": cand,
+                    "top_doc_id": doc_id,
+                    "top_doc_text": ctx[:1500]
+                }, ensure_ascii=False) + "\n")
+        typer.echo(f"Saved candidates: {dump_path}")
 
 if __name__ == "__main__":
     app()
